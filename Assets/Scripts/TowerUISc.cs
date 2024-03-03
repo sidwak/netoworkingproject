@@ -12,6 +12,7 @@ public class TowerUISc : MonoBehaviour
     public TMP_Text avgCapa;
     public TMP_Text covOut;
     public TMP_Text powerCnOut;
+    public TMP_Text connDevOut;
 
     public GameObject container;
 

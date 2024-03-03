@@ -30,6 +30,8 @@ public class PhoneManager : MonoBehaviour
         newPhone.transform.localPosition = pos;
         PhoneSc phoneSc = newPhone.GetComponent<PhoneSc>();
         phones.Add(phoneSc);
-        phoneSc.SetPhoneName("Phone" + phones.IndexOf(phoneSc).ToString());
+        phoneSc.id = phones.IndexOf(phoneSc);
+        phoneSc.globalId = phones.IndexOf(phoneSc);
+        phoneSc.SetPhoneName("Phone n/a." + phones.IndexOf(phoneSc).ToString());
     }
 }

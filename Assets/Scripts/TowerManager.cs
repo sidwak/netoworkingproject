@@ -22,7 +22,7 @@ public class TowerManager : MonoBehaviour
 
     void Update()
     {
-        
+
     }
 
     public void SpawnTower(Vector3 pos) 
@@ -31,6 +31,8 @@ public class TowerManager : MonoBehaviour
         newTower.transform.localPosition = pos;
         TowerSc towerSc = newTower.GetComponent<TowerSc>();
         towers.Add(towerSc);
+        SwitchSc.Instance.towers.Add(towerSc);
+        towerSc.id = towers.IndexOf(towerSc);
         towerSc.SetTowerName("Tower " + towers.IndexOf(towerSc).ToString());
     }
 }

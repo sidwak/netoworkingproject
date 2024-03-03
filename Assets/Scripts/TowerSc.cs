@@ -5,6 +5,7 @@ using TMPro;
 
 public class TowerSc : MonoBehaviour
 {
+    public int id = 0;
     public int maxDeviceCapacity;
     public int connDev = 0;
     public float minSpectrum = 0.6f;
@@ -16,6 +17,8 @@ public class TowerSc : MonoBehaviour
 
     public GameObject coverageCircle;
     private CircleCollider2D circleCol;
+
+    public List<PhoneSc> phones = new List<PhoneSc>();
 
     public TextMeshPro towerName;
    
@@ -47,6 +50,7 @@ public class TowerSc : MonoBehaviour
         TowerUISc.Instance.avgCapa.text = maxDeviceCapacity.ToString();
         TowerUISc.Instance.covOut.text = coverageRadius.ToString();
         TowerUISc.Instance.powerCnOut.text = powerConsumption.ToString();
+        TowerUISc.Instance.connDevOut.text = connDev.ToString();
     }
 
     public void OnSelected() 
@@ -82,5 +86,27 @@ public class TowerSc : MonoBehaviour
     {
         float powerConsumption = towerPower * spectrum / 2.5f;
         return powerConsumption * 10f;
+    }
+
+    public void sendMsgToSwitch(int towerId, int phnId, string msg)
+    {
+        SwitchSc.Instance.receiveMsgFromTower(towerId, phnId, msg); 
+    }
+
+    public void receiveMsgFromSwitch(int phnId, string msg) 
+    {
+        if (phnId > phones.Count - 1)
+        {
+            logMsg($"invalid phone Id {phnId}");
+        }
+        else 
+        {
+            phones[phnId].receiveMessage(msg);
+        }
+    }
+
+    public void logMsg(string msg)
+    {
+        Debug.Log($"{towerName.text} error: "+msg);
     }
 }

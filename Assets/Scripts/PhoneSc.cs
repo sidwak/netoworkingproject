@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PhoneSc : MonoBehaviour
 {
+    public int id = 0;
+    public int globalId = 0;
     public bool isSelected = false;
     public float movSpeed = 1f;
 
@@ -11,8 +14,11 @@ public class PhoneSc : MonoBehaviour
     public float packetLoss;
     public float signalStrength;
     public float disToTower;
+    public string recvdMsg = "";
 
     public GameObject line;
+
+    public TextMeshPro nameText;
 
     public TowerSc connectedTower;
     public List<TowerSc> inRangeTowers = new List<TowerSc>();
@@ -74,6 +80,9 @@ public class PhoneSc : MonoBehaviour
             }
         }
         connectedTower.connDev += 1;
+        connectedTower.phones.Add(this);
+        id = connectedTower.phones.IndexOf(this);
+        SetNewPhoneName(connectedTower.id.ToString());
         UpdateValues();
     }
 
@@ -110,7 +119,7 @@ public class PhoneSc : MonoBehaviour
                 break;
             }
         }
-        Debug.Log(numColliders);
+        //Debug.Log(numColliders);
         float transferSpeed = avgSpeed / ((numColliders + 1)*0.50f);
         if (numColliders <= 2) 
         {
@@ -157,7 +166,7 @@ public class PhoneSc : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("BaseStation")) 
         {
-            Debug.Log("Collider Enter");
+            //Debug.Log("Collider Enter");
             TowerSc rTower = collision.gameObject.GetComponent<TowerSc>();
             if (inRangeTowers.Contains(rTower) == false) 
             {
@@ -171,7 +180,7 @@ public class PhoneSc : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("BaseStation"))
         {
-            Debug.Log("Collider Exit");
+            //Debug.Log("Collider Exit");
             TowerSc rTower = collision.gameObject.GetComponent<TowerSc>();
             if (inRangeTowers.Contains(rTower) == true)
             {
@@ -181,7 +190,14 @@ public class PhoneSc : MonoBehaviour
                     ResetValues();
                     PhoneUISc.Instance.conTwTx.text = "Connected Tower: None";
                     connectedTower.connDev -= 1;
-                    connectedTower = null;                  
+                    connectedTower.phones.Remove(this);
+                    connectedTower = null;
+                    id = globalId;
+                    SetNewPhoneName("n/a");
+                    if (inRangeTowers.Count > 0)
+                    {
+                        SelectClosestTower();
+                    }
                 }
             }
         }
@@ -190,5 +206,25 @@ public class PhoneSc : MonoBehaviour
     public void SetPhoneName(string name) 
     {
         gameObject.name = name;
+        nameText.text = name;
+    }
+    public void SetNewPhoneName(string towerId) 
+    {
+        string name = "Phone "+towerId+"." + id.ToString();
+        gameObject.name = name;
+        nameText.text = name;
+    }
+
+    public void sentMessage(int towerId, int recvPhnId, string msg) 
+    {
+        string from = $"From {nameText.text}: "+msg;
+        connectedTower.sendMsgToSwitch(towerId, recvPhnId, from);    
+    }
+
+    public void receiveMessage(string msg) 
+    {
+        recvdMsg += msg;
+        recvdMsg += "\n";
+        UpdateGUIValues();
     }
 }
